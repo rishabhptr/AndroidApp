@@ -24,6 +24,7 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.HashMap;
+import java.util.Objects;
 
 import static java.util.logging.Logger.global;
 
@@ -65,19 +66,25 @@ public class ProfileActivity extends AppCompatActivity {
         }
     };
     private HashMap<String,Object> testing(){
-        final HashMap<String,Object> hashmap =new HashMap<>();
+        final HashMap<String,Object> hashmaparray =new HashMap<>();
+        final HashMap<String,Object>hashmap=new HashMap<>();
         StorageReference storagereference =FirebaseStorage.getInstance().getReference(pathtofirebase);
-
-        for(int i=1;;i++){
+         final int i[]=new int[2];
+        i[1]=0;
+        for( i[0]=1;;i[0]++){
             String path=i+".pdf";
             final StringBuilder build=new StringBuilder();
             StorageReference sref=storagereference.child(path);
             sref.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
                 @Override
                 public void onSuccess(StorageMetadata storageMetadata) {
+
                  hashmap.put("Name",storageMetadata.getName());
                     hashmap.put("StorageReference",storageMetadata.getReference());
                     hashmap.put("Check",storageMetadata.getCustomMetadata("Check"));
+                    hashmaparray.put(String.valueOf(i[0]),hashmap);
+                    if(storageMetadata.getCustomMetadata("Check").toString()=="final")
+                        i[1]=1;
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -85,11 +92,11 @@ public class ProfileActivity extends AppCompatActivity {
 
                 }
             });
-            if((hashmap.get("Check").toString()=="last")){
+            if(i[1]==1){
               break;
             }
         }
-    return  hashmap;}
+    return  hashmaparray;}
 
     private View.OnClickListener click=new View.OnClickListener() {
         @Override
